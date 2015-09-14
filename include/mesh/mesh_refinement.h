@@ -669,6 +669,12 @@ private:
   bool eliminate_unrefined_patches ();
 
 
+  /*
+   *
+   */
+  bool mixed_type_conformity ();
+
+
   //---------------------------------------------
   // Utility algorithms
 

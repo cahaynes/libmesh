@@ -1636,6 +1636,10 @@ void MeshRefinement::_smooth_flags(bool refining, bool coarsening)
             smoothing_satisfied = smoothing_satisfied &&
               !this->limit_underrefined_boundary(_underrefined_boundary_limit);
 
+          if (true)
+        	  smoothing_satisfied = smoothing_satisfied &&
+			    !this->mixed_type_conformity();
+
           satisfied = (coarsening_satisfied &&
                        refinement_satisfied &&
                        smoothing_satisfied);

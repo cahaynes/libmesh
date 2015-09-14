@@ -614,6 +614,39 @@ bool MeshRefinement::enforce_mismatch_limit_prior_to_refinement(Elem* elem,
   return flags_changed;
 }
 
+
+bool MeshRefinement::mixed_type_conformity()
+{
+	// Eventual return value
+	bool flags_changed = false;
+
+	MeshBase::element_iterator       elem_it  = _mesh.active_elements_begin();
+	const MeshBase::element_iterator elem_end = _mesh.active_elements_end();
+
+	for (; elem_it != elem_end; ++elem_it)
+	{
+	  Elem* elem = *elem_it;
+
+	  if(elem->refinement_flag() == Elem::REFINE)
+	     continue;
+
+	  Elem* elem_parent = elem->interior_parent();
+
+	  if(elem_parent!=NULL)
+	  {
+		  if(elem_parent->has_children() ||
+				  elem_parent->refinement_flag() == Elem::REFINE)
+		  {
+			  elem->set_refinement_flag(Elem::REFINE);
+			  flags_changed = true;
+		  }
+	  }
+	}
+
+	return flags_changed;
+}
+
+
 } // namespace libMesh
 
 
