@@ -549,7 +549,7 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
     }
 
   //Automatically set interior parents
-  std::vector<std::vector<dof_id_type>> node_to_elem;
+  std::vector< std::vector<dof_id_type> > node_to_elem;
   MeshTools::build_nodes_to_elem_map(*this,node_to_elem);
 
   for(element_iterator it = this->active_local_elements_begin();
@@ -557,10 +557,10 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
     {
       Elem * element = *it;
 
-      if(!element->interior_parent())
+      if(element->interior_parent())
         continue;
 
-      std::vector<std::set<dof_id_type>> neighbors;
+      std::vector< std::set<dof_id_type> > neighbors;
       neighbors.resize(element->n_vertices());
 
       //Assume we have an interior somewhere until proven otherwise
