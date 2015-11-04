@@ -552,7 +552,7 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
   std::vector< std::vector<dof_id_type> > node_to_elem;
   MeshTools::build_nodes_to_elem_map(*this,node_to_elem);
 
-  for(element_iterator it = this->active_local_elements_begin();
+  for(element_iterator it = this->active_elements_begin();
       it != this->active_elements_end(); it++)
     {
       Elem * element = *it;
