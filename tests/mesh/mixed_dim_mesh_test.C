@@ -268,9 +268,6 @@ public:
      */
     this->build_mesh();
 
-    // Let's set an interior_parent() this time for testing
-    _mesh->elem(2)->set_interior_parent(_mesh->elem(0));
-
 #ifdef LIBMESH_ENABLE_AMR
     MeshRefinement(*_mesh).uniformly_refine(1);
 #endif
