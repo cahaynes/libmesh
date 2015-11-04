@@ -557,7 +557,7 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
     {
       Elem * element = *it;
 
-      if(element->interior_parent())
+      if(element->dim()>=LIBMESH_DIM || element->interior_parent())
         continue;
 
       std::vector< std::set<dof_id_type> > neighbors;
