@@ -568,7 +568,7 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
 
       for(dof_id_type n=0; n < element->n_vertices(); n++)
         {
-          std::vector<dof_id_type> element_ids = node_to_elem[n];
+          std::vector<dof_id_type> element_ids = node_to_elem[element->node(n)];
           for(std::vector<dof_id_type>::iterator e_it = element_ids.begin();
               e_it != element_ids.end(); e_it++)
             {
