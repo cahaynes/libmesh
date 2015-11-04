@@ -563,8 +563,7 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
       std::vector< std::set<dof_id_type> > neighbors;
       neighbors.resize(element->n_vertices());
 
-      //Assume we have an interior somewhere until proven otherwise
-      bool found_interior_parents = true;
+      bool found_interior_parents = false;
 
       for(dof_id_type n=0; n < element->n_vertices(); n++)
         {
@@ -576,7 +575,11 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
               if(this->elem(eid)->dim() == element->dim()+1)
                 neighbors[n].insert(eid);
             }
-          if(neighbors[n].size()==0)
+          if(neighbors[n].size()>0)
+            {
+              found_interior_parents = true;
+            }
+          else
             {
               found_interior_parents = false;
               break;
@@ -588,15 +591,19 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
           for(std::set<dof_id_type>::iterator e_it = neighbors_0.begin();
               e_it != neighbors_0.end(); e_it++)
             {
-              found_interior_parents=true;
+              found_interior_parents=false;
               dof_id_type int_prnt = *e_it;
               for(dof_id_type n=1; n < element->n_vertices(); n++)
                 {
-                  if(neighbors[n].find(int_prnt)==neighbors[n].end())
-                  {
-                    found_interior_parents=false;
-                    break;
-                  }
+                  if(neighbors[n].find(int_prnt)!=neighbors[n].end())
+                    {
+                      found_interior_parents=true;
+                    }
+                  else
+                    {
+                      found_interior_parents=false;
+                      break;
+                    }
                 }
               if(found_interior_parents)
               {
