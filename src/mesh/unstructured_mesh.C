@@ -561,18 +561,20 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
         }
     }
 
-  //Automatically set interior parents
-  std::vector< std::vector<dof_id_type> > node_to_elem;
-  MeshTools::build_nodes_to_elem_map(*this,node_to_elem);
-
+  // Automatically set interior parents
   for(element_iterator it = this->active_elements_begin();
       it != this->active_elements_end(); it++)
     {
       Elem * element = *it;
 
+      //Ignore an 3D element or an element that already has an interior parent
       if(element->dim()>=LIBMESH_DIM || element->interior_parent())
         continue;
 
+      // Start by generating a SET of elements that are dim+1 to the current
+      // element at each vertex of the current element, thus ignoring interior nodes.
+      // If one of the SET of elements is empty, then we will not have an interior parent
+      // since an interior parent must be connected to all vertices of the current element
       std::vector< std::set<dof_id_type> > neighbors;
       neighbors.resize(element->n_vertices());
 
@@ -594,10 +596,18 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
             }
           else
             {
+              // We have found an empty set, no reason to continue
+              // Ensure we set this flag to false before the break since it could have
+              // been set to true for previous vertex
               found_interior_parents = false;
               break;
             }
         }
+
+      // If we have successfully generated a set of elements for each vertex, we will compare
+      // the set for vertex 0 will the sets for the vertices until we find a id that exists in
+      // all sets.  If found, this is our an interior parent id.  The interior parent id found
+      // will be the lowest element id if there is potential for multiple interior parents.
       if(found_interior_parents)
         {
           std::set<dof_id_type> neighbors_0 = neighbors[0];
