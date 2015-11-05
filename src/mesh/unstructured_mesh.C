@@ -231,6 +231,10 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
 
   START_LOG("find_neighbors()", "Mesh");
 
+  //This map will be used to set interior parents
+  std::vector< std::vector<dof_id_type> > node_to_elem;
+  node_to_elem.resize(this->n_nodes());
+
   const element_iterator el_end = this->elements_end();
 
   //TODO:[BSK] This should be removed later?!
@@ -263,6 +267,15 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
     for (element_iterator el = this->elements_begin(); el != el_end; ++el)
       {
         Elem* element = *el;
+
+        //Populating the node_to_elem map, same as MeshTools::build_nodes_to_elem_map
+        for (unsigned int n=0; n<(*el)->n_vertices(); n++)
+          {
+            libmesh_assert_less ((*el)->node(n), node_to_elem.size());
+            libmesh_assert_less ((*el)->id(), this->n_elem());
+
+            node_to_elem[(*el)->node(n)].push_back((*el)->id());
+          }
 
         for (unsigned char ms=0; ms<element->n_neighbors(); ms++)
           {
@@ -607,7 +620,7 @@ void UnstructuredMesh::find_neighbors (const bool reset_remote_elements,
                 }
               if(found_interior_parents)
               {
-                element->set_interior_parent(this->elem(int_prnt));
+                element->set_interior_parent(this->elem(interior_parent_id));
                 break;
               }
             }
